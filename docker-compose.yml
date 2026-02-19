@@ -1,0 +1,10 @@
+services:
+  db:
+    image: postgres:16
+    container_name: devtrackr-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: devtrackr_db
+    ports:
+      - "5432:5432"
