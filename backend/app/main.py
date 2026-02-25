@@ -1,12 +1,13 @@
 from fastapi import FastAPI
-from .database import engine, Base
-from . import models
-
-# Esta linha cria as tabelas no SQLite se elas não existirem
+from app.database import engine, Base
+from app import models
+# Create all tables in the SQLite database if they don't exist
 models.Base.metadata.create_all(bind=engine)
 
+# Initialize the FastAPI application
 app = FastAPI()
 
+# Root endpoint to check system status
 @app.get("/")
 def home():
     return {"status": "DevTrackr Online", "database": "Connected"}
