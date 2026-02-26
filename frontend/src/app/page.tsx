@@ -1,6 +1,6 @@
-import { AppSidebar } from "./components/app-sidebar"
-import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar"
-import { DashboardStats } from "./components/dashboard-stats"
+import { AppSidebar } from "../components/app-sidebar"
+import { SidebarProvider, SidebarTrigger } from "../components/ui/sidebar"
+import { DashboardStats } from "../components/dashboard/dashboard-stats"
 
 function App() {
   return (
