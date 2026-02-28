@@ -30,3 +30,24 @@ export async function fetchActiveJobs(): Promise<Job[]> {
     return [];
   }
 }
+
+export async function createJob(jobData: Omit<Job, 'id' | 'is_active'>) {
+  try {
+    const response = await fetch(`${API_URL}/jobs/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(jobData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro na API: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error creating job:", error);
+    throw error;
+  }
+}
