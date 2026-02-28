@@ -7,7 +7,6 @@ import {
   Timer,
   FileUser,
   PieChart,
-  Settings2,
   PlusCircle,
   TableProperties,
   MessageSquareMore,
@@ -48,7 +47,7 @@ const data = {
       icon: LayoutDashboard,
       isActive: true,
       items: [
-        { title: "Adicionar Nova Vaga", url: "#", icon: PlusCircle },
+        { title: "Adicionar Nova Vaga", url: "/applications/create-job", icon: PlusCircle },
         { title: "Painel de Triagem", url: "#", icon: LayoutDashboard },
         { title: "Lista Geral", url: "#", icon: TableProperties },
       ],

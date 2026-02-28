@@ -38,11 +38,13 @@ class JobBase(BaseModel):
     platform: Optional[str] = None
     work_mode: Optional[str] = None
     status: Optional[str] = "applied"
+    is_active: bool = True  # 👈 ADICIONADO AQUI [cite: 2026-02-28]
 
 class JobCreate(JobBase):
-    curriculum_id: Optional[int] = None # Optional link to a CV 
+    curriculum_id: Optional[int] = None
 
 class Job(JobBase, BaseSchema):
     id: int
     applied_date: datetime
-    interviews: List[Interview] = [] # Shows all interviews linked to this job 
+    is_active: bool # 👈 ADICIONADO AQUI TAMBÉM [cite: 2026-02-28]
+    interviews: List[Interview] = []
