@@ -39,7 +39,8 @@ class JobBase(BaseModel):
     work_mode: Optional[str] = None
     status: Optional[str] = "applied"
     is_active: bool = True  # 👈 ADICIONADO AQUI [cite: 2026-02-28]
-
+    role: str | None = None
+    
 class JobCreate(JobBase):
     curriculum_id: Optional[int] = None
 
