@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import Link from "next/link"
+import * as React from "react";
+import Link from "next/link";
 import {
   LayoutDashboard,
   Timer,
@@ -14,10 +14,10 @@ import {
   CalendarClock,
   ExternalLink,
   Files,
-} from "lucide-react"
+} from "lucide-react";
 
-import { NavMain } from "@/components/nav-main"
-import { NavUser } from "@/components/nav-user"
+import { NavMain } from "@/components/nav-main";
+import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -27,7 +27,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 const data = {
   user: {
@@ -42,9 +42,17 @@ const data = {
       icon: LayoutDashboard,
       isActive: true,
       items: [
-        { title: "Adicionar Nova Vaga", url: "/applications/create-job", icon: PlusCircle },
+        {
+          title: "Adicionar Nova Vaga",
+          url: "/applications/create-job",
+          icon: PlusCircle,
+        },
         { title: "Painel de Triagem", url: "#", icon: LayoutDashboard },
-        { title: "Lista Geral", url: "#", icon: TableProperties },
+        {
+          title: "Lista Geral",
+          url: "/applications/list",
+          icon: TableProperties,
+        },
       ],
     },
     {
@@ -77,7 +85,7 @@ const data = {
       ],
     },
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -85,14 +93,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild className="hover:bg-sidebar-accent transition-colors">
+            <SidebarMenuButton
+              size="lg"
+              asChild
+              className="hover:bg-sidebar-accent transition-colors"
+            >
               <Link href="/">
                 {/* Removido o bg-sidebar-primary e as cores de texto forçadas */}
                 <div className="flex aspect-square size-8 items-center justify-center">
-                  <img 
-                    src="/coffee-cup.png" 
-                    alt="Logo" 
-                    className="size-7 object-contain" 
+                  <img
+                    src="/coffee-cup.png"
+                    alt="Logo"
+                    className="size-7 object-contain"
                   />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -108,15 +120,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      
+
       <SidebarContent>
         <NavMain items={data.navMain} />
       </SidebarContent>
-      
+
       <SidebarFooter>
         <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

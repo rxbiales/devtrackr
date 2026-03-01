@@ -1,39 +1,37 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Briefcase, Calendar, CheckCircle2, XCircle } from "lucide-react"
-import { useEffect, useState } from "react"
-import { fetchAllJobs } from "@/services/jobServices"
-import { fetchAllInterviews } from "@/services/interviewServices"
-import { fetchActiveJobs } from "@/services/jobServices"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Briefcase, Calendar, CheckCircle2, XCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { fetchAllJobs } from "@/services/jobServices";
+import { fetchAllInterviews } from "@/services/interviewServices";
+import { fetchActiveJobs } from "@/services/jobServices";
 
 export function DashboardStats() {
-    const [totalJobs, setTotalJobs] = useState(0);
-    const [totalInterviews, setTotalInterviews] = useState(0);
-    const [activeJobs, setActiveJobs] = useState(0);
+  const [totalJobs, setTotalJobs] = useState(0);
+  const [totalInterviews, setTotalInterviews] = useState(0);
+  const [activeJobs, setActiveJobs] = useState(0);
 
-    useEffect(() => {
-        async function loadData(){
-            try {
-                const [jobs, active, interviews] = await Promise.all([
-                    fetchAllJobs(),
-                    fetchActiveJobs(),
-                    fetchAllInterviews()
-                ]);
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [jobs, active, interviews] = await Promise.all([
+          fetchAllJobs(),
+          fetchActiveJobs(),
+          fetchAllInterviews(),
+        ]);
 
-                setTotalJobs(jobs.length);
-                setActiveJobs(active.length);
-                setTotalInterviews(interviews.length);
-            } catch (error) {
-                console.log("Error fetching dashboard data:", error);
-            }
-          };
+        setTotalJobs(jobs.length);
+        setActiveJobs(active.length);
+        setTotalInterviews(interviews.length);
+      } catch (error) {
+        console.log("Error fetching dashboard data:", error);
+      }
+    }
 
-        loadData();
-
-    }, []);
+    loadData();
+  }, []);
   return (
-    
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -44,7 +42,7 @@ export function DashboardStats() {
           <div className="text-2xl font-bold">{totalJobs}</div>
         </CardContent>
       </Card>
-      
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Entrevistas</CardTitle>
@@ -75,5 +73,5 @@ export function DashboardStats() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
