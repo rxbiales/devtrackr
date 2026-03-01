@@ -14,7 +14,7 @@ class Job(Base):
     platform = Column(String) 
     work_mode = Column(String) 
     status = Column(String, default="applied")
-    
+    role = Column(String, nullable=True)
     # Nova FK para saber qual currículo foi usado nesta vaga
     curriculum_id = Column(Integer, ForeignKey("curriculums.id"), nullable=True)
 
