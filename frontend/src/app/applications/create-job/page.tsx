@@ -1,4 +1,4 @@
-import { AddJobDialog } from "@/components/application/add-job-dialog"; // Se você separou o form do modal [cite: 2026-02-25]
+import { AddJobDialog } from "@/components/application/add-job-dialog";
 
 export default function CreateJobPage() {
   return (
