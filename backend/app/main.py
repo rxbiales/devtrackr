@@ -66,3 +66,6 @@ def deactivate_job(job_id: int, db: Session = Depends(get_db)):
 @app.post("/challenges/", response_model=schemas.TechnicalChallenge)
 def create_challenge(challenge: schemas.TechnicalChallengeCreate, db: Session = Depends(get_db)):
     return crud.create_technical_challenge(db=db, challenge=challenge)
+@app.post("/interviews/", response_model=schemas.Interview)
+def create_interview(interview: schemas.InterviewCreate, db: Session = Depends(get_db)):
+    return crud.create_interview(db=db, interview=interview)
