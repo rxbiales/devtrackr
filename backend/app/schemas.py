@@ -11,7 +11,7 @@ class BaseSchema(BaseModel):
 class InterviewBase(BaseModel):
     interview_date: datetime
     notes: Optional[str] = None
-    location: Optional[str] = None
+    location: Optional[str] = None 
 
 class InterviewCreate(InterviewBase):
     job_id: int 
@@ -20,9 +20,12 @@ class Interview(InterviewBase, BaseSchema):
     id: int
 
 # --- TECHNICAL CHALLENGE SCHEMAS ---
+
+# No app/schemas.py
+
 class TechnicalChallengeBase(BaseModel):
     job_id: int
-    challenge_deadline: datetime
+    challenge_deadline: datetime  
     location: Optional[str] = None
     notes: Optional[str] = None
 
