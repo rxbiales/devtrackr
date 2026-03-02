@@ -38,19 +38,15 @@ class JobBase(BaseModel):
     platform: Optional[str] = None
     work_mode: Optional[str] = None
     status: Optional[str] = "applied"
-    is_active: bool = True  # 👈 ADICIONADO AQUI [cite: 2026-02-28]
-    role: str | None = None
-    
+    is_active: bool = True
+    role: Optional[str] = None 
+
 class JobCreate(JobBase):
     curriculum_id: Optional[int] = None
+    applied_date: Optional[datetime] = None
 
-class Job(JobBase, BaseSchema):
+class Job(JobBase): 
     id: int
-<<<<<<< Updated upstream
-    applied_date: datetime
-    is_active: bool # 👈 ADICIONADO AQUI TAMBÉM [cite: 2026-02-28]
-    interviews: List[Interview] = []
-=======
     applied_date: Optional[datetime] = None 
     is_active: bool
     interviews: List["Interview"] = [] 
@@ -71,4 +67,3 @@ class TechnicalChallenge(TechnicalChallengeBase):
     id: int
     class Config:
         from_attributes = True
->>>>>>> Stashed changes

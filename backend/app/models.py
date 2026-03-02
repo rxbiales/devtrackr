@@ -10,11 +10,12 @@ class Job(Base):
     job_title = Column(String, nullable=False)
     company = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
-    applied_date = Column(DateTime, server_default=func.now())
+    applied_date = Column(DateTime, nullable=False)    
     platform = Column(String) 
     work_mode = Column(String) 
     status = Column(String, default="applied")
     role = Column(String, nullable=True)
+    
     # Nova FK para saber qual currículo foi usado nesta vaga
     curriculum_id = Column(Integer, ForeignKey("curriculums.id"), nullable=True)
 
