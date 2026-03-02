@@ -5,31 +5,44 @@ from typing import Optional, List
 # --- SHARED CONFIG ---
 class BaseSchema(BaseModel):
     class Config:
-        from_attributes = True # Allows Pydantic to read SQLAlchemy models
+        from_attributes = True
 
 # --- INTERVIEW SCHEMAS ---
 class InterviewBase(BaseModel):
     interview_date: datetime
     notes: Optional[str] = None
-    interview_type: Optional[str] = "Technical" # e.g., HR, Technical, Cultural
+    location: Optional[str] = None
 
 class InterviewCreate(InterviewBase):
-    job_id: int # Required to link the interview to a job 
+    job_id: int 
 
 class Interview(InterviewBase, BaseSchema):
+    id: int
+
+# --- TECHNICAL CHALLENGE SCHEMAS ---
+class TechnicalChallengeBase(BaseModel):
+    job_id: int
+    challenge_deadline: datetime
+    location: Optional[str] = None
+    notes: Optional[str] = None
+
+class TechnicalChallengeCreate(TechnicalChallengeBase):
+    pass
+
+class TechnicalChallenge(TechnicalChallengeBase, BaseSchema):
     id: int
 
 # --- CURRICULUM SCHEMAS ---
 class CurriculumBase(BaseModel):
     name: str
-    file_path: str # Path to the stored PDF file 
+    file_path: str 
 
 class CurriculumCreate(CurriculumBase):
     pass
 
 class Curriculum(CurriculumBase, BaseSchema):
     id: int
-    upload_date: datetime
+    created_at: datetime
 
 # --- JOB SCHEMAS ---
 class JobBase(BaseModel):
@@ -43,27 +56,11 @@ class JobBase(BaseModel):
 
 class JobCreate(JobBase):
     curriculum_id: Optional[int] = None
-    applied_date: Optional[datetime] = None
+    applied_date: datetime # Removido Optional para bater com o model
 
-class Job(JobBase): 
+class Job(JobBase, BaseSchema): 
     id: int
-    applied_date: Optional[datetime] = None 
-    is_active: bool
-    interviews: List["Interview"] = [] 
-
-    class Config:
-        from_attributes = True
-
-class TechnicalChallengeBase(BaseModel):
-    job_id: int
-    challenge_deadline: datetime
-    location: Optional[str] = None
-    notes: Optional[str] = None
-
-class TechnicalChallengeCreate(TechnicalChallengeBase):
-    pass
-
-class TechnicalChallenge(TechnicalChallengeBase):
-    id: int
-    class Config:
-        from_attributes = True
+    applied_date: datetime
+    curriculum_id: Optional[int] = None
+    interviews: List[Interview] = [] 
+    challenges: List[TechnicalChallenge] = [] # Agora ele reconhece a classe acima

@@ -16,11 +16,11 @@ class Job(Base):
     status = Column(String, default="applied")
     role = Column(String, nullable=True)
     
-    # Nova FK para saber qual currículo foi usado nesta vaga
     curriculum_id = Column(Integer, ForeignKey("curriculums.id"), nullable=True)
 
-    # Relacionamentos
+    # RELACIONAMENTOS (O Job é o dono de tudo)
     interviews = relationship("Interview", back_populates="job")
+    challenges = relationship("TechnicalChallenge", back_populates="job")
     curriculum = relationship("Curriculum", back_populates="jobs")
 
 class Curriculum(Base):
@@ -31,8 +31,8 @@ class Curriculum(Base):
     file_path = Column(String, nullable=False)
     version = Column(String)
     created_at = Column(DateTime, server_default=func.now())
-
-    # Relacionamento inverso
+    
+    # O currículo só conhece as vagas onde foi usado
     jobs = relationship("Job", back_populates="curriculum")
 
 class Interview(Base):
@@ -52,7 +52,7 @@ class TechnicalChallenge(Base):
     id = Column(Integer, primary_key=True, index=True)
     job_id = Column(Integer, ForeignKey("jobs.id"))
     challenge_deadline = Column(DateTime, nullable=False)
-    location = Column(String) # Link do repo ou plataforma
+    location = Column(String)
     notes = Column(String)
     
     job = relationship("Job", back_populates="challenges")

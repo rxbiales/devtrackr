@@ -13,7 +13,6 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI(title="DevTrackr API")
 
 # --- CORS MIDDLEWARE ---
-# Allows your frontend (React/Next.js) to communicate with this API
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
@@ -62,12 +61,8 @@ def deactivate_job(job_id: int, db: Session = Depends(get_db)):
     
     db_job.is_active = False
     db.commit()
-    
- infra/create-challenges-table
     return {"message": "Job deactivated"}
  
 @app.post("/challenges/", response_model=schemas.TechnicalChallenge)
 def create_challenge(challenge: schemas.TechnicalChallengeCreate, db: Session = Depends(get_db)):
     return crud.create_technical_challenge(db=db, challenge=challenge)
- Stashed changes
-    return {"message": "Job deactivated"}
