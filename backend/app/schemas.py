@@ -53,3 +53,17 @@ class Job(JobBase):
 
     class Config:
         from_attributes = True
+
+class TechnicalChallengeBase(BaseModel):
+    job_id: int
+    challenge_deadline: datetime
+    location: Optional[str] = None
+    notes: Optional[str] = None
+
+class TechnicalChallengeCreate(TechnicalChallengeBase):
+    pass
+
+class TechnicalChallenge(TechnicalChallengeBase):
+    id: int
+    class Config:
+        from_attributes = True
