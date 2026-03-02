@@ -1,7 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Calendar as CalendarIcon,
+} from "lucide-react";
 import {
   format,
   addMonths,
@@ -18,6 +22,7 @@ import {
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   HoverCard,
   HoverCardContent,
@@ -26,7 +31,7 @@ import {
 
 interface JobCalendarProps {
   jobs: any[];
-  dateField: string; // Ex: 'interview_date' ou 'challenge_deadline'
+  dateField: string;
   colorClass?: string;
 }
 
@@ -36,27 +41,43 @@ export function JobCalendar({
   colorClass = "bg-primary",
 }: JobCalendarProps) {
   const [currentMonth, setCurrentMonth] = React.useState(new Date());
+  const today = new Date();
 
   const renderHeader = () => (
-    <div className="flex items-center justify-between px-2 mb-4">
-      <h2 className="text-xl font-bold capitalize">
-        {format(currentMonth, "MMMM yyyy", { locale: ptBR })}
-      </h2>
-      <div className="flex gap-1">
+    <div className="flex items-center justify-between px-1 mb-4">
+      <div className="flex items-center gap-2">
+        <CalendarIcon className="h-5 w-5 text-muted-foreground" />
+        <h2 className="text-lg font-semibold tracking-tight capitalize">
+          {format(currentMonth, "MMMM yyyy", { locale: ptBR })}
+        </h2>
+      </div>
+      <div className="flex items-center gap-2">
         <Button
           variant="outline"
-          size="icon"
-          onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+          size="sm"
+          className="h-8 text-xs"
+          onClick={() => setCurrentMonth(new Date())}
         >
-          <ChevronLeft className="h-4 w-4" />
+          Hoje
         </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
+        <div className="flex gap-1">
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -64,11 +85,11 @@ export function JobCalendar({
   const renderDays = () => {
     const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
     return (
-      <div className="grid grid-cols-7 mb-2 border-b pb-2">
+      <div className="grid grid-cols-7 mb-0 border-b bg-muted/30">
         {days.map((d) => (
           <div
             key={d}
-            className="text-center text-xs font-semibold text-muted-foreground uppercase"
+            className="py-2 text-center text-[10px] font-bold text-muted-foreground uppercase tracking-wider"
           >
             {d}
           </div>
@@ -91,44 +112,74 @@ export function JobCalendar({
       for (let i = 0; i < 7; i++) {
         const formattedDate = format(day, "d");
         const cloneDay = day;
-
-        // Filtra os jobs que acontecem neste dia específico
         const dayJobs = jobs.filter(
           (job) =>
             job[dateField] && isSameDay(parseISO(job[dateField]), cloneDay),
         );
+        const isToday = isSameDay(day, today);
+        const isCurrentMonth = isSameMonth(day, monthStart);
 
         days.push(
           <div
             key={day.toString()}
             className={cn(
-              "relative h-24 border-r border-b p-2 transition-colors hover:bg-muted/30",
-              !isSameMonth(day, monthStart) &&
-                "bg-muted/10 text-muted-foreground/30",
+              "relative h-20 border-r border-b p-1.5 transition-colors",
+              !isCurrentMonth
+                ? "bg-muted/5 text-muted-foreground/20"
+                : "bg-background",
+              isToday && "bg-primary/5",
             )}
           >
-            <span className="text-sm font-medium">{formattedDate}</span>
-            <div className="mt-1 flex flex-col gap-1 overflow-hidden">
+            <span
+              className={cn(
+                "text-xs font-medium flex items-center justify-center h-5 w-5 rounded-full",
+                isToday && "bg-primary text-primary-foreground font-bold",
+                !isCurrentMonth && "opacity-50",
+              )}
+            >
+              {formattedDate}
+            </span>
+            <div className="mt-1 flex flex-col gap-0.5 overflow-y-auto max-h-[45px] scrollbar-hide">
               {dayJobs.map((job) => (
-                <HoverCard key={job.id}>
+                <HoverCard key={job.id} openDelay={100} closeDelay={100}>
                   <HoverCardTrigger asChild>
                     <div
                       className={cn(
-                        "px-1.5 py-0.5 rounded text-[10px] font-bold truncate text-white cursor-help",
+                        "px-1.5 py-0.5 rounded-[3px] text-[9px] font-semibold truncate text-white cursor-pointer shadow-sm",
                         colorClass,
                       )}
                     >
                       {job.company}
                     </div>
                   </HoverCardTrigger>
-                  <HoverCardContent className="w-64">
-                    <div className="space-y-1">
-                      <h4 className="text-sm font-bold">{job.company}</h4>
+                  <HoverCardContent
+                    className="w-64 p-3 shadow-xl border-primary/10"
+                    side="top"
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-sm font-bold leading-none">
+                          {job.company}
+                        </h4>
+                        <Badge
+                          variant="outline"
+                          className="text-[9px] h-4 uppercase"
+                        >
+                          {job.status}
+                        </Badge>
+                      </div>
                       <p className="text-xs text-muted-foreground">
                         {job.job_title}
                       </p>
-                      <div className="text-[10px] bg-muted p-1 rounded mt-2">
-                        {job.platform || "Plataforma não informada"}
+                      <div className="flex flex-col gap-1 pt-1 border-t">
+                        <span className="text-[10px] font-medium text-muted-foreground italic truncate">
+                          📍 {job.location || "Remoto / Link"}
+                        </span>
+                        {job.notes && (
+                          <p className="text-[10px] text-muted-foreground line-clamp-2 italic">
+                            "{job.notes}"
+                          </p>
+                        )}
                       </div>
                     </div>
                   </HoverCardContent>
@@ -140,23 +191,18 @@ export function JobCalendar({
         day = addDays(day, 1);
       }
       rows.push(
-        <div
-          key={day.toString()}
-          className="grid grid-cols-7 border-l border-t"
-        >
+        <div key={day.toString()} className="grid grid-cols-7 border-l">
           {days}
         </div>,
       );
       days = [];
     }
-    return (
-      <div className="rounded-xl border overflow-hidden bg-card">{rows}</div>
-    );
+    return <div className="border-t">{rows}</div>;
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
-      {renderHeader()}
+    <div className="w-full max-w-5xl mx-auto rounded-xl border bg-card shadow-sm overflow-hidden">
+      <div className="p-4 bg-card">{renderHeader()}</div>
       {renderDays()}
       {renderCells()}
     </div>
