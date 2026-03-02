@@ -14,3 +14,26 @@ export async function fetchAllInterviews(): Promise<Interview[]> {
     return [];
   }
 }
+
+export async function createInterview(data: {
+  job_id: number;
+  interview_date: string;
+  location: string;
+  notes: string;
+}) {
+  console.log("Tentando criar entrevista com dados:", data);
+
+  const response = await fetch(`${API_URL}/interviews/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json();
+    console.log("DETALHE DO ERRO:", JSON.stringify(errorBody, null, 2)); // Isso vai mostrar exatamente qual campo falhou
+    throw new Error("Erro ao criar entrevista");
+  }
+
+  return response.json();
+}
