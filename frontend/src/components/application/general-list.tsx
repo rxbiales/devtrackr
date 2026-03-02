@@ -15,6 +15,7 @@ import {
 import { fetchAllJobs } from "@/services/jobServices";
 import { useEffect } from "react";
 
+// Mapeamento de cores para os estados das vagas
 const statusVariants: Record<
   string,
   "default" | "secondary" | "destructive" | "outline"
@@ -23,6 +24,7 @@ const statusVariants: Record<
   interviewing: "default",
   rejected: "destructive",
   offer: "outline",
+  inactive: "destructive", // Status para vagas descartadas [cite: 2026-03-01]
 };
 
 export function GeneralList() {
@@ -33,7 +35,7 @@ export function GeneralList() {
   useEffect(() => {
     async function loadJobs() {
       try {
-        const data = await fetchAllJobs();
+        const data = await fetchAllJobs(); // [cite: 2026-03-01]
         setJobs(data);
       } catch (error) {
         console.error("Erro ao buscar vagas:", error);
@@ -85,28 +87,38 @@ export function GeneralList() {
                 </TableCell>
               </TableRow>
             ) : filteredJobs.length > 0 ? (
-              filteredJobs.map((job) => (
-                <TableRow key={job.id}>
-                  <TableCell className="font-medium">{job.company}</TableCell>
-                  <TableCell>{job.job_title}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{job.work_mode || "N/A"}</Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground italic">
-                    {job.platform || "—"}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={statusVariants[job.status] || "default"}>
-                      {(job.status || "N/A").toUpperCase()}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {job.applied_date
-                      ? new Date(job.applied_date).toLocaleDateString("pt-BR")
-                      : "Data não disponível"}
-                  </TableCell>
-                </TableRow>
-              ))
+              filteredJobs.map((job) => {
+                // Se is_active for falso, forçamos o visual para 'inactive' (vermelho) [cite: 2026-02-28, 2026-03-01]
+                const currentStatus = !job.is_active ? "inactive" : job.status;
+                const statusLabel = !job.is_active
+                  ? "INACTIVE"
+                  : (job.status || "N/A").toUpperCase();
+
+                return (
+                  <TableRow key={job.id}>
+                    <TableCell className="font-medium">{job.company}</TableCell>
+                    <TableCell>{job.job_title}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{job.work_mode || "N/A"}</Badge>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground italic">
+                      {job.platform || "—"}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={statusVariants[currentStatus] || "default"}
+                      >
+                        {statusLabel}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {job.applied_date
+                        ? new Date(job.applied_date).toLocaleDateString("pt-BR")
+                        : "Data não disponível"}
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             ) : (
               <TableRow>
                 <TableCell colSpan={6} className="h-24 text-center">

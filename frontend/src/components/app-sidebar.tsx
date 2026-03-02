@@ -60,7 +60,11 @@ const data = {
       url: "#",
       icon: Timer,
       items: [
-        { title: "Aguardando Resposta", url: "#", icon: MessageSquareMore },
+        {
+          title: "Aguardando Resposta",
+          url: "/processes/waiting-response",
+          icon: MessageSquareMore,
+        },
         { title: "Desafios Técnicos", url: "#", icon: CodeXml },
         { title: "Agenda de Entrevistas", url: "#", icon: CalendarClock },
       ],

@@ -1,4 +1,4 @@
-import { GeneralList } from "@/components/application/general-list"; // Se você separou o form do modal [cite: 2026-02-25]
+import { GeneralList } from "@/components/application/general-list";
 
 export default function CreateJobPage() {
   return (

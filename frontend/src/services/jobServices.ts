@@ -23,15 +23,15 @@ export async function fetchActiveJobs(): Promise<Job[]> {
     }
 
     const jobs: Job[] = await response.json();
-        
-    return jobs.filter(job => job.is_active);
+
+    return jobs.filter((job) => job.is_active);
   } catch (error) {
     console.error("Error fetching active jobs:", error);
     return [];
   }
 }
 
-export async function createJob(jobData: Omit<Job, 'id' | 'is_active'>) {
+export async function createJob(jobData: Omit<Job, "id" | "is_active">) {
   try {
     const response = await fetch(`${API_URL}/jobs/`, {
       method: "POST",
@@ -48,6 +48,49 @@ export async function createJob(jobData: Omit<Job, 'id' | 'is_active'>) {
     return await response.json();
   } catch (error) {
     console.error("Error creating job:", error);
+    throw error;
+  }
+}
+
+export async function updateJobStatus(id: number, status: string) {
+  try {
+    const response = await fetch(`${API_URL}/jobs/${id}/status`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status }),
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Erro na API ao atualizar status: ${response.statusText}`,
+      );
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error updating job status:", error);
+    throw error;
+  }
+}
+
+export async function deactivateJob(id: number) {
+  try {
+    const response = await fetch(`${API_URL}/jobs/${id}/deactivate`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro na API ao desativar vaga: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error deactivating job:", error);
     throw error;
   }
 }
