@@ -65,8 +65,16 @@ const data = {
           url: "/processes/waiting-response",
           icon: MessageSquareMore,
         },
-        { title: "Desafios Técnicos", url: "#", icon: CodeXml },
-        { title: "Agenda de Entrevistas", url: "#", icon: CalendarClock },
+        {
+          title: "Desafios Técnicos",
+          url: "/processes/challenges-agenda",
+          icon: CodeXml,
+        },
+        {
+          title: "Agenda de Entrevistas",
+          url: "/processes/interviews-agenda",
+          icon: CalendarClock,
+        },
       ],
     },
     {

@@ -15,7 +15,6 @@ import {
 import { fetchAllJobs } from "@/services/jobServices";
 import { useEffect } from "react";
 
-// Mapeamento de cores para os estados das vagas
 const statusVariants: Record<
   string,
   "default" | "secondary" | "destructive" | "outline"
@@ -24,7 +23,7 @@ const statusVariants: Record<
   interviewing: "default",
   rejected: "destructive",
   offer: "outline",
-  inactive: "destructive", // Status para vagas descartadas [cite: 2026-03-01]
+  inactive: "destructive",
 };
 
 export function GeneralList() {
@@ -35,7 +34,7 @@ export function GeneralList() {
   useEffect(() => {
     async function loadJobs() {
       try {
-        const data = await fetchAllJobs(); // [cite: 2026-03-01]
+        const data = await fetchAllJobs();
         setJobs(data);
       } catch (error) {
         console.error("Erro ao buscar vagas:", error);
@@ -88,7 +87,6 @@ export function GeneralList() {
               </TableRow>
             ) : filteredJobs.length > 0 ? (
               filteredJobs.map((job) => {
-                // Se is_active for falso, forçamos o visual para 'inactive' (vermelho) [cite: 2026-02-28, 2026-03-01]
                 const currentStatus = !job.is_active ? "inactive" : job.status;
                 const statusLabel = !job.is_active
                   ? "INACTIVE"
@@ -121,7 +119,10 @@ export function GeneralList() {
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
+                <TableCell
+                  colSpan={6}
+                  className="text-center py-10 text-muted-foreground"
+                >
                   Nenhuma vaga encontrada.
                 </TableCell>
               </TableRow>

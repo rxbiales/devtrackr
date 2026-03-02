@@ -1,23 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, CalendarCheck } from "lucide-react";
+import { Loader2, Calendar } from "lucide-react";
 import { fetchAllJobs } from "@/services/jobServices";
 import { JobCalendar } from "@/components/job-calendar";
 
 export function InterviewAgenda() {
-  const [jobs, setJobs] = useState<any[]>([]);
+  const [interviews, setInterviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
       try {
         const data = await fetchAllJobs();
-        // Filtra apenas quem está em entrevista e tem data marcada
-        const filtered = data.filter(
-          (j: any) => j.status === "interviewing" && j.is_active,
+        const flattened = data.flatMap((job: any) =>
+          (job.interviews || []).map((i: any) => ({
+            ...i,
+            company: job.company,
+            job_title: job.job_title,
+            platform: job.platform,
+          })),
         );
-        setJobs(filtered);
+        setInterviews(flattened);
       } catch (err) {
         console.error(err);
       } finally {
@@ -30,22 +34,29 @@ export function InterviewAgenda() {
   if (loading)
     return (
       <div className="flex justify-center p-20">
-        <Loader2 className="animate-spin h-8 w-8 text-green-600" />
+        <Loader2 className="animate-spin h-6 w-6 text-muted-foreground" />
+      </div>
+    );
+
+  if (interviews.length === 0)
+    return (
+      <div className="text-center py-10 text-muted-foreground">
+        <p>Nenhuma entrevista agendada.</p>
       </div>
     );
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2 px-2">
-        <CalendarCheck className="h-5 w-5 text-green-600" />
-        <h1 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
-          Agenda de Entrevistas
-        </h1>
+      <div className="flex items-center gap-2 px-1 text-muted-foreground">
+        <Calendar className="h-4 w-4" />
+        <span className="text-[11px] font-bold uppercase tracking-[0.2em]">
+          Datas Agendadas
+        </span>
       </div>
       <JobCalendar
-        jobs={jobs}
+        jobs={interviews}
         dateField="interview_date"
-        colorClass="bg-green-600 hover:bg-green-700"
+        colorClass="bg-zinc-800 hover:bg-zinc-900"
       />
     </div>
   );
