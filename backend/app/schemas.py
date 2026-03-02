@@ -46,6 +46,29 @@ class JobCreate(JobBase):
 
 class Job(JobBase, BaseSchema):
     id: int
+<<<<<<< Updated upstream
     applied_date: datetime
     is_active: bool # 👈 ADICIONADO AQUI TAMBÉM [cite: 2026-02-28]
     interviews: List[Interview] = []
+=======
+    applied_date: Optional[datetime] = None 
+    is_active: bool
+    interviews: List["Interview"] = [] 
+
+    class Config:
+        from_attributes = True
+
+class TechnicalChallengeBase(BaseModel):
+    job_id: int
+    challenge_deadline: datetime
+    location: Optional[str] = None
+    notes: Optional[str] = None
+
+class TechnicalChallengeCreate(TechnicalChallengeBase):
+    pass
+
+class TechnicalChallenge(TechnicalChallengeBase):
+    id: int
+    class Config:
+        from_attributes = True
+>>>>>>> Stashed changes

@@ -41,4 +41,33 @@ def delete_job(job_id: int, db: Session = Depends(get_db)):
     success = crud.delete_job(db=db, job_id=job_id)
     if not success:
         raise HTTPException(status_code=404, detail="Job not found")
+<<<<<<< Updated upstream
     return {"message": f"Job {job_id} deleted successfully"}
+=======
+    return {"message": f"Job {job_id} deleted successfully"}
+
+@app.patch("/jobs/{job_id}/status")
+def update_job_status(job_id: int, data: dict, db: Session = Depends(get_db)):
+    db_job = db.query(models.Job).filter(models.Job.id == job_id).first()
+    if not db_job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    
+    db_job.status = data.get("status")
+    db.commit()
+    db.refresh(db_job)
+    return db_job
+
+@app.patch("/jobs/{job_id}/deactivate")
+def deactivate_job(job_id: int, db: Session = Depends(get_db)):
+    db_job = db.query(models.Job).filter(models.Job.id == job_id).first()
+    if not db_job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    
+    db_job.is_active = False
+    db.commit()
+    return {"message": "Job deactivated"}
+
+@app.post("/challenges/", response_model=schemas.TechnicalChallenge)
+def create_challenge(challenge: schemas.TechnicalChallengeCreate, db: Session = Depends(get_db)):
+    return crud.create_technical_challenge(db=db, challenge=challenge)
+>>>>>>> Stashed changes

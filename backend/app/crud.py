@@ -37,3 +37,10 @@ def create_interview(db: Session, interview: schemas.InterviewCreate):
     db.commit()
     db.refresh(db_interview)
     return db_interview
+
+def create_technical_challenge(db: Session, challenge: schemas.TechnicalChallengeCreate):
+    db_challenge = models.TechnicalChallenge(**challenge.model_dump())
+    db.add(db_challenge)
+    db.commit()
+    db.refresh(db_challenge)
+    return db_challenge

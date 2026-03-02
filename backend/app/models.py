@@ -44,3 +44,14 @@ class Interview(Base):
     notes = Column(String)
 
     job = relationship("Job", back_populates="interviews")
+
+class TechnicalChallenge(Base):
+    __tablename__ = "technical_challenges"
+
+    id = Column(Integer, primary_key=True, index=True)
+    job_id = Column(Integer, ForeignKey("jobs.id"))
+    challenge_deadline = Column(DateTime, nullable=False)
+    location = Column(String) # Link do repo ou plataforma
+    notes = Column(String)
+    
+    job = relationship("Job", back_populates="challenges")
