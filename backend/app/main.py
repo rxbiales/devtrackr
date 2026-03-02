@@ -42,3 +42,26 @@ def delete_job(job_id: int, db: Session = Depends(get_db)):
     if not success:
         raise HTTPException(status_code=404, detail="Job not found")
     return {"message": f"Job {job_id} deleted successfully"}
+
+@app.patch("/jobs/{job_id}/status")
+def update_job_status(job_id: int, data: dict, db: Session = Depends(get_db)):
+    # Lógica direta no endpoint
+    job = db.query(models.Job).filter(models.Job.id == job_id).first()
+    if not job:
+        raise HTTPException(status_code=404, detail="Vaga não encontrada")
+    
+    job.status = data.get("status")
+    db.commit()
+    db.refresh(job)
+    return job
+
+@app.patch("/jobs/{job_id}/deactivate")
+def deactivate_job(job_id: int, db: Session = Depends(get_db)):
+    # Lógica direta no endpoint
+    job = db.query(models.Job).filter(models.Job.id == job_id).first()
+    if not job:
+        raise HTTPException(status_code=404, detail="Vaga não encontrada")
+    
+    job.is_active = False
+    db.commit()
+    return {"message": "Vaga desativada com sucesso"}
