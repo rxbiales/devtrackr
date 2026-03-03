@@ -1,18 +1,26 @@
-from fastapi import FastAPI, Depends, HTTPException
+import os
+import shutil
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from typing import List
 
 from . import models, schemas, crud
-from .database import engine
+from .database import engine, SessionLocal
 from .dependencies import get_db
 
-# Initialize database tables
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="DevTrackr API")
 
-# --- CORS MIDDLEWARE ---
+# Configuração de Arquivos Estáticos (Uploads)
+UPLOAD_DIR = "uploads"
+if not os.path.exists(UPLOAD_DIR):
+    os.makedirs(UPLOAD_DIR)
+
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
@@ -21,15 +29,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- ROUTES ---
-
-@app.get("/")
-def home():
-    return {"status": "DevTrackr Online", "database": "Connected"}
-
+# --- JOB ROUTES ---
 @app.get("/jobs/", response_model=List[schemas.Job])
-def read_jobs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return crud.get_jobs(db, skip=skip, limit=limit)
+def read_jobs(db: Session = Depends(get_db)):
+    return crud.get_jobs(db)
 
 @app.post("/jobs/", response_model=schemas.Job)
 def create_job(job: schemas.JobCreate, db: Session = Depends(get_db)):
@@ -37,35 +40,35 @@ def create_job(job: schemas.JobCreate, db: Session = Depends(get_db)):
 
 @app.delete("/jobs/{job_id}")
 def delete_job(job_id: int, db: Session = Depends(get_db)):
-    success = crud.delete_job(db=db, job_id=job_id)
-    if not success:
+    if not crud.delete_job(db, job_id):
         raise HTTPException(status_code=404, detail="Job not found")
-    return {"message": f"Job {job_id} deleted successfully"}
+    return {"message": "Success"}
 
-@app.patch("/jobs/{job_id}/status")
-def update_job_status(job_id: int, data: dict, db: Session = Depends(get_db)):
-    db_job = db.query(models.Job).filter(models.Job.id == job_id).first()
-    if not db_job:
-        raise HTTPException(status_code=404, detail="Job not found")
-    
-    db_job.status = data.get("status")
-    db.commit()
-    db.refresh(db_job)
-    return db_job
+# --- CURRICULUM ROUTES ---
+@app.get("/curriculums/", response_model=List[schemas.Curriculum])
+def read_curriculums(db: Session = Depends(get_db)):
+    return crud.get_curriculums(db)
 
-@app.patch("/jobs/{job_id}/deactivate")
-def deactivate_job(job_id: int, db: Session = Depends(get_db)):
-    db_job = db.query(models.Job).filter(models.Job.id == job_id).first()
-    if not db_job:
-        raise HTTPException(status_code=404, detail="Job not found")
+@app.post("/curriculums/upload", response_model=schemas.Curriculum)
+async def upload_curriculum(
+    name: str = Form(...),
+    version: str = Form(None),
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+    file_location = f"{UPLOAD_DIR}/{file.filename}"
+    with open(file_location, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
     
-    db_job.is_active = False
-    db.commit()
-    return {"message": "Job deactivated"}
- 
+    # URL completa para o frontend ler o PDF
+    file_url = f"http://localhost:8000/uploads/{file.filename}"
+    return crud.create_curriculum(db, name=name, file_path=file_url, version=version)
+
+# --- PROCESS ROUTES ---
 @app.post("/challenges/", response_model=schemas.TechnicalChallenge)
 def create_challenge(challenge: schemas.TechnicalChallengeCreate, db: Session = Depends(get_db)):
-    return crud.create_technical_challenge(db=db, challenge=challenge)
+    return crud.create_challenge(db=db, challenge=challenge)
+
 @app.post("/interviews/", response_model=schemas.Interview)
 def create_interview(interview: schemas.InterviewCreate, db: Session = Depends(get_db)):
     return crud.create_interview(db=db, interview=interview)
