@@ -1,8 +1,6 @@
 from sqlalchemy.orm import Session
 from . import models, schemas
 
-# --- JOB OPERATIONS ---
-
 def get_jobs(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Job).offset(skip).limit(limit).all()
 
@@ -18,34 +16,29 @@ def delete_job(db: Session, job_id: int):
     if db_job:
         db.delete(db_job)
         db.commit()
-    return db_job
+        return True
+    return False
 
-# --- CURRICULUM OPERATIONS ---
+def get_curriculums(db: Session):
+    return db.query(models.Curriculum).all()
 
-def create_curriculum(db: Session, curriculum: schemas.CurriculumCreate):
-    db_curriculum = models.Curriculum(**curriculum.model_dump())
-    db.add(db_curriculum)
+def create_curriculum(db: Session, name: str, file_path: str, version: str = None):
+    db_cv = models.Curriculum(name=name, file_path=file_path, version=version)
+    db.add(db_cv)
     db.commit()
-    db.refresh(db_curriculum)
-    return db_curriculum
-
-# --- INTERVIEW OPERATIONS ---
+    db.refresh(db_cv)
+    return db_cv
 
 def create_interview(db: Session, interview: schemas.InterviewCreate):
-    db_interview = models.Interview(**interview.model_dump())
-    db.add(db_interview)
+    db_int = models.Interview(**interview.model_dump())
+    db.add(db_int)
     db.commit()
-    db.refresh(db_interview)
-    return db_interview
+    db.refresh(db_int)
+    return db_int
 
-def create_technical_challenge(db: Session, challenge: schemas.TechnicalChallengeCreate):
-    db_challenge = models.TechnicalChallenge(
-        job_id=challenge.job_id,
-        challenge_deadline=challenge.challenge_deadline,
-        location=challenge.location,
-        notes=challenge.notes
-    )
-    db.add(db_challenge)
+def create_challenge(db: Session, challenge: schemas.TechnicalChallengeCreate):
+    db_ch = models.TechnicalChallenge(**challenge.model_dump())
+    db.add(db_ch)
     db.commit()
-    db.refresh(db_challenge)
-    return db_challenge
+    db.refresh(db_ch)
+    return db_ch
