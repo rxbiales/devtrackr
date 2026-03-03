@@ -14,6 +14,7 @@ import {
   CalendarIcon,
   FileText,
   UserCog,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -47,13 +48,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useEffect, useState } from "react";
 import { createJob } from "@/services/jobServices";
+import { fetchAllCurriculums, Curriculum } from "@/services/curriculumServices";
 
 const formSchema = z.object({
   job_title: z.string().min(2, "O título deve ter pelo menos 2 caracteres"),
-  role: z
-    .string()
-    .min(2, "Descreva o nível ou função (ex: Júnior, Especialista)"), // 👈 ADICIONADO
+  role: z.string().min(2, "Descreva o nível ou função"),
   company: z.string().min(2, "A empresa é obrigatória"),
   status: z.string(),
   work_mode: z.enum(["Presencial", "Remoto", "Híbrido"]),
@@ -65,18 +66,32 @@ const formSchema = z.object({
 });
 
 export function AddJobDialog() {
-  const availableCurriculums = [
-    { id: "1", name: "Currículo Fullstack English" },
-    { id: "2", name: "Currículo Frontend English" },
-    { id: "3", name: "Currículo Fullstack Português" },
-    { id: "4", name: "Currículo Frontend Português" },
-  ];
+  const [open, setOpen] = useState(false);
+  const [curriculums, setCurriculums] = useState<Curriculum[]>([]);
+  const [isLoadingCvs, setIsLoadingCvs] = useState(false);
+
+  // Busca os currículos reais do banco ao abrir o Dialog ou montar o componente
+  useEffect(() => {
+    async function loadCurriculums() {
+      setIsLoadingCvs(true);
+      try {
+        const data = await fetchAllCurriculums();
+        setCurriculums(data);
+      } catch (error) {
+        console.error("Erro ao carregar currículos:", error);
+      } finally {
+        setIsLoadingCvs(false);
+      }
+    }
+
+    if (open) loadCurriculums();
+  }, [open]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       job_title: "",
-      role: "", // 👈 ADICIONADO
+      role: "",
       company: "",
       status: "applied",
       work_mode: "Remoto",
@@ -92,16 +107,17 @@ export function AddJobDialog() {
       applied_date: values.applied_date.toISOString(),
       curriculum_id: Number(values.curriculum_id),
     };
+
     createJob(payload)
       .then(() => {
         form.reset();
-        // Aqui você poderia fechar o dialog se quiser
+        setOpen(false); // Fecha o dialog após sucesso
       })
       .catch((error) => console.error(error));
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="gap-2 shadow-sm font-semibold">
           <Plus className="h-4 w-4" /> Nova Vaga
@@ -141,7 +157,6 @@ export function AddJobDialog() {
                 )}
               />
 
-              {/* CAMPO ROLE ADICIONADO ABAIXO */}
               <FormField
                 control={form.control}
                 name="role"
@@ -268,15 +283,27 @@ export function AddJobDialog() {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecione um currículo" />
+                        <SelectValue
+                          placeholder={
+                            isLoadingCvs
+                              ? "Carregando..."
+                              : "Selecione um currículo"
+                          }
+                        />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {availableCurriculums.map((curr) => (
-                        <SelectItem key={curr.id} value={curr.id}>
-                          {curr.name}
-                        </SelectItem>
-                      ))}
+                      {isLoadingCvs ? (
+                        <div className="flex items-center justify-center p-2">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        </div>
+                      ) : (
+                        curriculums.map((curr) => (
+                          <SelectItem key={curr.id} value={curr.id.toString()}>
+                            {curr.name} {curr.version && `(${curr.version})`}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                   <FormMessage />

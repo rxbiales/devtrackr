@@ -1,11 +1,15 @@
 import { GeneralList } from "@/components/application/general-list";
 
-export default function CreateJobPage() {
+export default function GeneralListPage() {
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Lista de Vagas</h2>
+    <div className="p-6">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold tracking-tight">Lista de Vagas</h1>
+        <p className="text-muted-foreground text-sm">
+          Visualize e gerencie todas as suas candidaturas ativas.
+        </p>
       </div>
+
       <GeneralList />
     </div>
   );

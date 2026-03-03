@@ -82,7 +82,7 @@ const data = {
       url: "#",
       icon: FileUser,
       items: [
-        { title: "Meus Currículos", url: "#", icon: Files },
+        { title: "Meus Currículos", url: "/resources/cvs", icon: Files },
         { title: "Portfólios e Links", url: "#", icon: ExternalLink },
       ],
     },
