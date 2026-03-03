@@ -12,7 +12,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { ClipboardPen, Calendar, MapPin, FileText } from "lucide-react";
-import { createTechnicalChallenge } from "@/services/challenges";
+import { createTechnicalChallenge } from "@/services/challengesServices";
 import { updateJobStatus } from "@/services/jobServices";
 
 export function ChallengeAction({
