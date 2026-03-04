@@ -7,14 +7,13 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from . import models, schemas, crud
-from .database import engine, SessionLocal
+from .database import engine
 from .dependencies import get_db
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="DevTrackr API")
 
-# Configuração de Arquivos Estáticos (Uploads)
 UPLOAD_DIR = "uploads"
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
@@ -44,6 +43,13 @@ def delete_job(job_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Job not found")
     return {"message": "Success"}
 
+@app.patch("/jobs/{job_id}", response_model=schemas.Job)
+def update_job_status(job_id: int, status_update: schemas.JobUpdate, db: Session = Depends(get_db)):
+    db_job = crud.update_job_status(db=db, job_id=job_id, status=status_update.status)
+    if not db_job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    return db_job
+
 # --- CURRICULUM ROUTES ---
 @app.get("/curriculums/", response_model=List[schemas.Curriculum])
 def read_curriculums(db: Session = Depends(get_db)):
@@ -60,7 +66,6 @@ async def upload_curriculum(
     with open(file_location, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
     
-    # URL completa para o frontend ler o PDF
     file_url = f"http://localhost:8000/uploads/{file.filename}"
     return crud.create_curriculum(db, name=name, file_path=file_url, version=version)
 

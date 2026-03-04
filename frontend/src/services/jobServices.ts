@@ -53,28 +53,29 @@ export async function createJob(jobData: Omit<Job, "id" | "is_active">) {
 }
 
 export async function updateJobStatus(id: number, status: string) {
+  // Ajustado para a rota padrão que criamos acima
+  const fullUrl = `${API_URL}/jobs/${id}`;
+
   try {
-    const response = await fetch(`${API_URL}/jobs/${id}/status`, {
+    const response = await fetch(fullUrl, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ status }),
+      body: JSON.stringify({ status }), // Enviando o novo status
     });
 
     if (!response.ok) {
-      throw new Error(
-        `Erro na API ao atualizar status: ${response.statusText}`,
-      );
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`Erro na API: ${response.statusText}`);
     }
 
     return await response.json();
   } catch (error) {
-    console.error("Error updating job status:", error);
+    console.error("Erro ao atualizar status:", error);
     throw error;
   }
 }
-
 export async function deactivateJob(id: number) {
   try {
     const response = await fetch(`${API_URL}/jobs/${id}/deactivate`, {
@@ -93,61 +94,4 @@ export async function deactivateJob(id: number) {
     console.error("Error deactivating job:", error);
     throw error;
   }
-}
-
-export async function getWeeklyStats() {
-  const jobs = await fetchAllJobs();
-
-  const now = new Date();
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(now.getDate() - 7);
-
-  const weeklyJobs = jobs.filter(
-    (job: any) => new Date(job.applied_date) >= sevenDaysAgo,
-  );
-
-  const daysMap: Record<string, number> = {
-    Seg: 0,
-    Ter: 0,
-    Qua: 0,
-    Qui: 0,
-    Sex: 0,
-    Sáb: 0,
-    Dom: 0,
-  };
-  const weekdays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-
-  weeklyJobs.forEach((job: any) => {
-    const dayName = weekdays[new Date(job.applied_date).getDay()];
-    if (daysMap[dayName] !== undefined) daysMap[dayName]++;
-  });
-
-  const weeklyChartData = Object.entries(daysMap).map(([day, count]) => ({
-    day,
-    applications: count,
-  }));
-
-  // 2. Processamento de Modelo de Trabalho
-  const modelsMap: Record<string, number> = {
-    Remoto: 0,
-    Híbrido: 0,
-    Presencial: 0,
-  };
-  weeklyJobs.forEach((job: any) => {
-    const model = job.work_model || "Presencial"; // Fallback caso esteja nulo
-    if (modelsMap[model] !== undefined) modelsMap[model]++;
-  });
-
-  const workModelData = [
-    { model: "Remoto", count: modelsMap["Remoto"], fill: "#3b82f6" },
-    { model: "Híbrido", count: modelsMap["Híbrido"], fill: "#a855f7" },
-    { model: "Presencial", count: modelsMap["Presencial"], fill: "#64748b" },
-  ];
-
-  return {
-    weeklyChartData,
-    workModelData,
-    totalApplications: weeklyJobs.length,
-    goalPercentage: Math.min(Math.round((weeklyJobs.length / 65) * 100), 100),
-  };
 }
