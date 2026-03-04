@@ -36,7 +36,7 @@ class TechnicalChallengeBase(BaseModel):
     notes: Optional[str] = None
 
 class TechnicalChallengeCreate(TechnicalChallengeBase):
-    pass  # <--- Adicione esta classe aqui
+    pass
 
 class TechnicalChallenge(TechnicalChallengeBase, BaseSchema):
     id: int
@@ -53,6 +53,10 @@ class JobBase(BaseModel):
 class JobCreate(JobBase):
     curriculum_id: Optional[int] = None
     applied_date: datetime
+
+# Nova classe para atualização de status
+class JobUpdate(BaseModel):
+    status: str
 
 class Job(JobBase, BaseSchema): 
     id: int
