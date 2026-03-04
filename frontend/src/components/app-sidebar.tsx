@@ -81,19 +81,16 @@ const data = {
       title: "Recursos",
       url: "#",
       icon: FileUser,
-      items: [
-        { title: "Meus Currículos", url: "/resources/cvs", icon: Files },
-        { title: "Portfólios e Links", url: "#", icon: ExternalLink },
-      ],
+      items: [{ title: "Meus Currículos", url: "/resources/cvs", icon: Files }],
     },
     {
       title: "Analytics",
       url: "/stats",
       icon: PieChart,
       items: [
-        { title: "Métricas Semanais", url: "#" },
-        { title: "Taxa de Conversão", url: "#" },
-        { title: "Vagas Rejeitadas", url: "#" },
+        { title: "Métricas Semanais", url: "/stats/weekly" },
+        { title: "Taxa de Conversão", url: "/stats/conversion-rate" },
+        { title: "Vagas Rejeitadas", url: "/stats/rejected-jobs" },
       ],
     },
   ],
