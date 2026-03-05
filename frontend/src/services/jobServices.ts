@@ -77,21 +77,15 @@ export async function updateJobStatus(id: number, status: string) {
   }
 }
 export async function deactivateJob(id: number) {
-  try {
-    const response = await fetch(`${API_URL}/jobs/${id}/deactivate`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+  const response = await fetch(`${API_URL}/jobs/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ is_active: false }),
+  });
 
-    if (!response.ok) {
-      throw new Error(`Erro na API ao desativar vaga: ${response.statusText}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error deactivating job:", error);
-    throw error;
+  if (!response.ok) {
+    throw new Error(`Erro na API ao desativar vaga: ${response.statusText}`);
   }
+
+  return await response.json();
 }

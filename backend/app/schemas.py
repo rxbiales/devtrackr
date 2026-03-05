@@ -54,9 +54,9 @@ class JobCreate(JobBase):
     curriculum_id: Optional[int] = None
     applied_date: datetime
 
-# Nova classe para atualização de status
 class JobUpdate(BaseModel):
-    status: str
+    status: Optional[str] = None
+    is_active: Optional[bool] = None
 
 class Job(JobBase, BaseSchema): 
     id: int

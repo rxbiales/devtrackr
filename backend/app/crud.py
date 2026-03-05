@@ -11,10 +11,13 @@ def create_job(db: Session, job: schemas.JobCreate):
     db.refresh(db_job)
     return db_job
 
-def update_job_status(db: Session, job_id: int, status: str):
+# Função genérica de atualização
+def update_job(db: Session, job_id: int, job_update: schemas.JobUpdate):
     db_job = db.query(models.Job).filter(models.Job.id == job_id).first()
     if db_job:
-        db_job.status = status
+        update_data = job_update.model_dump(exclude_unset=True)
+        for key, value in update_data.items():
+            setattr(db_job, key, value)
         db.commit()
         db.refresh(db_job)
     return db_job

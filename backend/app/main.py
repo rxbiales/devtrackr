@@ -44,8 +44,8 @@ def delete_job(job_id: int, db: Session = Depends(get_db)):
     return {"message": "Success"}
 
 @app.patch("/jobs/{job_id}", response_model=schemas.Job)
-def update_job_status(job_id: int, status_update: schemas.JobUpdate, db: Session = Depends(get_db)):
-    db_job = crud.update_job_status(db=db, job_id=job_id, status=status_update.status)
+def update_job(job_id: int, job_update: schemas.JobUpdate, db: Session = Depends(get_db)):
+    db_job = crud.update_job(db=db, job_id=job_id, job_update=job_update)
     if not db_job:
         raise HTTPException(status_code=404, detail="Job not found")
     return db_job
