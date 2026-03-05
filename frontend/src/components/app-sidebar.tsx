@@ -12,7 +12,6 @@ import {
   MessageSquareMore,
   CodeXml,
   CalendarClock,
-  ExternalLink,
   Files,
 } from "lucide-react";
 
@@ -108,7 +107,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="hover:bg-sidebar-accent transition-colors"
             >
               <Link href="/">
-                {/* Removido o bg-sidebar-primary e as cores de texto forçadas */}
                 <div className="flex aspect-square size-8 items-center justify-center">
                   <img
                     src="/coffee-cup.png"
