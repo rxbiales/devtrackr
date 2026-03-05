@@ -46,7 +46,6 @@ const data = {
           url: "/applications/create-job",
           icon: PlusCircle,
         },
-        { title: "Painel de Triagem", url: "#", icon: LayoutDashboard },
         {
           title: "Lista Geral",
           url: "/applications/list",
@@ -89,7 +88,7 @@ const data = {
       items: [
         { title: "Métricas Semanais", url: "/stats/weekly" },
         { title: "Taxa de Conversão", url: "/stats/conversion-rate" },
-        { title: "Vagas Rejeitadas", url: "/stats/rejected-jobs" },
+        { title: "Vagas Rejeitadas", url: "/stats/deactivated-list" },
       ],
     },
   ],
