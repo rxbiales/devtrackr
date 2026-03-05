@@ -29,7 +29,7 @@ import {
   Briefcase,
   Loader2,
 } from "lucide-react";
-import { getWeeklyStats } from "@/services/jobServices";
+import { getWeeklyStats } from "@/services/statsServices";
 
 export function WeeklyMetrics() {
   const [data, setData] = useState<any>(null);
