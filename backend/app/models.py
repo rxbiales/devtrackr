@@ -3,6 +3,17 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from .database import Base
 
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    is_active = Column(Boolean, default=True)
+
+    jobs = relationship("Job", back_populates="owner")
+    curriculums = relationship("Curriculum", back_populates="owner")
+
 class Job(Base):
     __tablename__ = "jobs"
     id = Column(Integer, primary_key=True, index=True)
@@ -19,6 +30,9 @@ class Job(Base):
     interviews = relationship("Interview", back_populates="job")
     challenges = relationship("TechnicalChallenge", back_populates="job")
     curriculum = relationship("Curriculum", back_populates="jobs")
+    
+    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner = relationship("User", back_populates="jobs")
 
 class Curriculum(Base):
     __tablename__ = "curriculums"
@@ -28,7 +42,10 @@ class Curriculum(Base):
     version = Column(String, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
     jobs = relationship("Job", back_populates="curriculum")
-
+    
+    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner = relationship("User", back_populates="curriculums")
+    
 class Interview(Base):
     __tablename__ = "interviews"
     id = Column(Integer, primary_key=True, index=True)
