@@ -1,11 +1,10 @@
-import { AppSidebar } from "@/components/app-sidebar"
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import "./global.css"
-
+import { AppSidebar } from "@/components/app-sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import "@/app/global.css";
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="pt-br">
@@ -22,5 +21,5 @@ export default function RootLayout({
         </SidebarProvider>
       </body>
     </html>
-  )
+  );
 }
