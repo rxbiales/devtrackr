@@ -1,4 +1,6 @@
 export interface Job {
+  had_technical_test: unknown;
+  technical_approval: unknown;
   id: number;
   job_title: string;
   company: string;
