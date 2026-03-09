@@ -64,3 +64,20 @@ class Job(JobBase, BaseSchema):
     curriculum_id: Optional[int] = None
     interviews: List[Interview] = [] 
     challenges: List[TechnicalChallenge] = []
+
+class UserBase(BaseModel):
+    email: str
+
+class UserCreate(UserBase):
+    password: str
+
+class User(UserBase, BaseSchema):
+    id: int
+    is_active: bool
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    email: Optional[str] = None

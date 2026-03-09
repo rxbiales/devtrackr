@@ -1,19 +1,32 @@
 from sqlalchemy.orm import Session
 from . import models, schemas
+from .auth import get_password_hash
 
-def get_jobs(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Job).offset(skip).limit(limit).all()
+# --- USUÁRIOS ---
+def get_user_by_email(db: Session, email: str):
+    return db.query(models.User).filter(models.User.email == email).first()
 
-def create_job(db: Session, job: schemas.JobCreate):
-    db_job = models.Job(**job.model_dump())
+def create_user(db: Session, user: schemas.UserCreate):
+    hashed_pwd = get_password_hash(user.password)
+    db_user = models.User(email=user.email, hashed_password=hashed_pwd)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+# --- VAGAS  ---
+def get_jobs(db: Session, user_id: int, skip: int = 0, limit: int = 100):
+    return db.query(models.Job).filter(models.Job.owner_id == user_id).offset(skip).limit(limit).all()
+
+def create_job(db: Session, job: schemas.JobCreate, user_id: int):
+    db_job = models.Job(**job.model_dump(), owner_id=user_id)
     db.add(db_job)
     db.commit()
     db.refresh(db_job)
     return db_job
 
-# Função genérica de atualização
-def update_job(db: Session, job_id: int, job_update: schemas.JobUpdate):
-    db_job = db.query(models.Job).filter(models.Job.id == job_id).first()
+def update_job(db: Session, job_id: int, job_update: schemas.JobUpdate, user_id: int):
+    db_job = db.query(models.Job).filter(models.Job.id == job_id, models.Job.owner_id == user_id).first()
     if db_job:
         update_data = job_update.model_dump(exclude_unset=True)
         for key, value in update_data.items():
@@ -22,14 +35,15 @@ def update_job(db: Session, job_id: int, job_update: schemas.JobUpdate):
         db.refresh(db_job)
     return db_job
 
-def delete_job(db: Session, job_id: int):
-    db_job = db.query(models.Job).filter(models.Job.id == job_id).first()
+def delete_job(db: Session, job_id: int, user_id: int):
+    db_job = db.query(models.Job).filter(models.Job.id == job_id, models.Job.owner_id == user_id).first()
     if db_job:
         db.delete(db_job)
         db.commit()
         return True
     return False
 
+# --- CURRÍCULOS ---
 def get_curriculums(db: Session):
     return db.query(models.Curriculum).all()
 
@@ -40,6 +54,7 @@ def create_curriculum(db: Session, name: str, file_path: str, version: str = Non
     db.refresh(db_cv)
     return db_cv
 
+# --- PROCESSOS (ENTREVISTAS E DESAFIOS) ---
 def create_interview(db: Session, interview: schemas.InterviewCreate):
     db_int = models.Interview(**interview.model_dump())
     db.add(db_int)
