@@ -5,7 +5,6 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get("token");
   const { pathname } = request.nextUrl;
 
-  // Permite acesso direto a login, signup e arquivos estáticos
   if (
     pathname.startsWith("/login") ||
     pathname.startsWith("/signup") ||
@@ -16,7 +15,6 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Se não tem token, redireciona para login
   if (!token) {
     return NextResponse.redirect(new URL("/login", request.url));
   }

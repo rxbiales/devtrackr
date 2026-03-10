@@ -1,39 +1,19 @@
-import { Interview } from "@/types/interview";
-
+import { getAuthHeaders } from "./authHeaders";
 const API_URL = "http://localhost:8000";
 
-export async function fetchAllInterviews(): Promise<Interview[]> {
-  try {
-    const response = await fetch(`${API_URL}/interviews/`);
-    if (!response.ok) {
-      throw new Error("Failed to fetch interviews");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching interviews:", error);
-    return [];
-  }
+export async function fetchAllInterviews() {
+  const response = await fetch(`${API_URL}/interviews/`, {
+    headers: getAuthHeaders(),
+  });
+  if (!response.ok) throw new Error("Failed to fetch interviews");
+  return response.json();
 }
 
-export async function createInterview(data: {
-  job_id: number;
-  interview_date: string;
-  location: string;
-  notes: string;
-}) {
-  console.log("Tentando criar entrevista com dados:", data);
-
+export async function createInterview(data: any) {
   const response = await fetch(`${API_URL}/interviews/`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
-
-  if (!response.ok) {
-    const errorBody = await response.json();
-    console.log("DETALHE DO ERRO:", JSON.stringify(errorBody, null, 2)); // Isso vai mostrar exatamente qual campo falhou
-    throw new Error("Erro ao criar entrevista");
-  }
-
   return response.json();
 }
