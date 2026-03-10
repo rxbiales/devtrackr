@@ -1,11 +1,11 @@
 import { fetchAllJobs } from "./jobServices";
-import { fetchAllCurriculums } from "./curriculumServices"; // [cite: 2026-03-04]
+import { fetchAllCurriculums } from "./curriculumServices";
 
 /**
  * Métrica 1: Ritmo Semanal
  */
 export async function getWeeklyStats() {
-  const jobs = await fetchAllJobs(); // [cite: 2026-03-04]
+  const jobs = await fetchAllJobs();
   const now = new Date();
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(now.getDate() - 7);
@@ -55,7 +55,7 @@ export async function getWeeklyStats() {
     weeklyChartData,
     workModelData,
     totalApplications: weeklyJobs.length,
-    goalPercentage: Math.min(Math.round((weeklyJobs.length / 30) * 100), 100), // [cite: 2026-02-25]
+    goalPercentage: Math.min(Math.round((weeklyJobs.length / 30) * 100), 100),
   };
 }
 
@@ -63,15 +63,10 @@ export async function getWeeklyStats() {
  * Métrica 2: Eficiência do Funil
  */
 export async function getConversionStats() {
-  const [jobs, curriculums] = await Promise.all([
-    fetchAllJobs(),
-    fetchAllCurriculums(), // [cite: 2026-03-04]
-  ]);
+  const [jobs] = await Promise.all([fetchAllJobs(), fetchAllCurriculums()]);
 
   const totalJobs = jobs.length;
-  const curriculumMap = new Map(curriculums.map((c: any) => [c.id, c.name]));
 
-  // 1. Taxa de Resposta (Soma apenas avanços reais)
   const successStatuses = ["interviewing", "interview", "offer"];
   const respondedJobsCount = jobs.filter((j: any) =>
     successStatuses.includes(j.status?.toLowerCase()),
@@ -80,20 +75,17 @@ export async function getConversionStats() {
   const globalConv =
     totalJobs > 0 ? ((respondedJobsCount / totalJobs) * 100).toFixed(1) : "0.0";
 
-  // 2. Funil Técnico
   const funnelData = [
     {
       step: "Testes",
       count: jobs.filter(
-        (j: any) =>
-          j.had_technical_test === true ||
-          (j.challenges && j.challenges.length > 0),
+        (j: any) => j.had_technical_test || j.challenges?.length > 0,
       ).length,
       fill: "#8884d8",
     },
     {
       step: "Aprovação",
-      count: jobs.filter((j: any) => j.technical_approval === true).length,
+      count: jobs.filter((j: any) => j.technical_approval).length,
       fill: "#82ca9d",
     },
     {
@@ -104,24 +96,16 @@ export async function getConversionStats() {
     },
   ];
 
-  // 3. Uso de Currículos
   const resumeMap: Record<string, number> = {};
-  jobs.forEach((job: any) => {
-    const name = job.curriculum_id
-      ? curriculumMap.get(job.curriculum_id)
-      : "Sem currículo vinculado";
-    resumeMap[name] = (resumeMap[name] || 0) + 1;
-  });
 
   const resumeData = Object.entries(resumeMap).map(([name, value]) => ({
-    name: name || "Padrão",
+    name,
     value,
   }));
 
-  // 4. Foco de Carreira
   const titleMap: Record<string, number> = {};
   jobs.forEach((job: any) => {
-    const title = job.job_title?.trim() || "Título não informado";
+    const title = job.job_title?.trim() || "Não informado";
     titleMap[title] = (titleMap[title] || 0) + 1;
   });
 
