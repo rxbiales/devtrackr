@@ -33,7 +33,6 @@ export default function LoginPage() {
 
       const data = await response.json();
 
-      // Salva token para o middleware e email para o sidebar
       document.cookie = `token=${data.access_token}; path=/; max-age=3600; SameSite=Lax`;
       localStorage.setItem("user_email", email);
 
